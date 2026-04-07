@@ -1,0 +1,325 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kidney Disease Risk Checker</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+<style>
+  body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #e0f7fa, #f3e5f5);
+    min-height: 100vh;
+    color: #111;
+  }
+
+.container { max-width: 650px; margin-top: 80px; }
+
+/* Glassmorphic Card */
+.card {
+  border-radius: 25px;
+  padding: 2.5rem;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(15px);
+  box-shadow: 0 15px 50px rgba(0,0,0,0.15);
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+.card:hover { transform: translateY(-5px); box-shadow: 0 20px 60px rgba(0,0,0,0.25); }
+
+/* Form Floating Labels with Icons */
+.form-floating { position: relative; margin-bottom: 1.8rem; }
+.form-floating i {
+  position: absolute;
+  left: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #555;
+  font-size: 1.2rem;
+}
+.form-floating > .form-control {
+  padding-left: 45px; /* space for icon */
+  padding-top: 1.2rem;
+  padding-bottom: 1.2rem;
+  border-radius: 15px;
+  border: 1.5px solid #ddd;
+  font-size: 1rem;
+  transition: all 0.3s;
+}
+.form-floating > .form-control:focus {
+  border-color: #ff9800;
+  box-shadow: 0 0 10px rgba(255,152,0,0.25);
+}
+.form-floating label {
+  left: 45px;
+  top: 12px;
+  font-weight: 500;
+  color: #777;
+  transition: all 0.3s;
+}
+.form-floating > .form-control:focus + label,
+.form-floating > .form-control:not(:placeholder-shown) + label {
+  top: -8px;
+  left: 15px;
+  font-size: 0.85rem;
+  color: #ff5722;
+  background: rgba(255,255,255,0.9);
+  padding: 0 5px;
+}
+
+/* Button */
+.btn-custom {
+  border-radius: 30px;
+  padding: 12px 40px;
+  font-weight: 500;
+  background: linear-gradient(90deg,#ff9800,#ff5722);
+  color: #fff;
+  border: none;
+  transition: all 0.3s;
+}
+.btn-custom:hover { background: linear-gradient(90deg,#ff5722,#ff9800); transform: translateY(-2px); }
+
+/* Prediction Alerts */
+.alert {
+  border-radius: 20px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+.alert-high {
+  background: rgba(255, 0, 0, 0.15);
+  border: 1px solid rgba(255, 0, 0, 0.3);
+  color: #b70000;
+  animation: pulse-red 1.5s infinite;
+}
+.alert-low {
+  background: rgba(0, 255, 0, 0.15);
+  border: 1px solid rgba(0, 255, 0, 0.3);
+  color: #006400;
+}
+@keyframes pulse-red {
+  0% { box-shadow: 0 0 0 0 rgba(255,0,0,0.4); }
+  70% { box-shadow: 0 0 20px 10px rgba(255,0,0,0.2); }
+  100% { box-shadow: 0 0 0 0 rgba(255,0,0,0.4); }
+}
+
+/* Accordion */
+.accordion-button {
+  backdrop-filter: blur(10px);
+  background: rgba(255,255,255,0.2);
+  border-radius: 15px;
+  margin-bottom: 5px;
+}
+.accordion-button:not(.collapsed) {
+  background: rgba(255,255,255,0.3);
+}
+.accordion-body ul { padding-left: 20px; }
+.accordion-button img { height: 28px; }
+
+h2, p { color: hsl(0, 0%, 0%); }
+
+/* Risk Meter */
+.risk-meter {
+  height: 20px;
+  border-radius: 15px;
+  overflow: hidden;
+  background: #e0e0e0;
+  margin-bottom: 1.5rem;
+}
+.risk-level {
+  height: 100%;
+  border-radius: 15px;
+  transition: width 0.5s;
+}
+
+h2 { font-weight: 600; }
+h5 { font-weight: 500; margin-bottom: 1rem; }
+.list-unstyled li { margin-bottom: 0.5rem; }
+
+</style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark shadow-sm">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="{% url 'patient-dashboard' %}"><b>PredictCare360</b></a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarCollapse">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item"><a class="nav-link active" href="{% url 'disease-overview' %}">Overview</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'breast-cancer-form' %}">Breast Cancer</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'diabetes' %}">Diabetes</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'heart' %}">Heart Disease</a></li>
+        <li class="nav-item"><a class="nav-link active" href="{% url 'kidney' %}">Kidney Disease</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'liver' %}">Liver Disease</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<div class="container text-center pt-5">
+  <h2 class="mb-3">🩺 Kidney Disease Risk Checker</h2>
+  <p class="text-muted mb-5">Enter your health details to assess your kidney disease risk.</p>
+
+  <!-- Form Card -->
+  <div class="card">
+    <form method="POST" action="{% url 'predict_kidney' %}">
+      {% csrf_token %}
+
+      <!-- Inputs with icons -->
+      <div class="form-floating">
+        <i class="bi bi-heart-pulse-fill"></i>
+        <input type="number" class="form-control" id="bp" name="bp" placeholder="Blood Pressure" required>
+        <label for="bp">Blood Pressure</label>
+      </div>
+
+      <div class="form-floating">
+        <i class="bi bi-droplet-half"></i>
+        <input type="number" step="any" class="form-control" id="sg" name="sg" placeholder="Specific Gravity" required>
+        <label for="sg">Specific Gravity</label>
+      </div>
+
+      <div class="form-floating">
+        <i class="bi bi-bandaid-fill"></i>
+        <input type="number" class="form-control" id="al" name="al" placeholder="Albumin" required>
+        <label for="al">Albumin</label>
+      </div>
+
+      <div class="form-floating">
+        <i class="bi bi-candy"></i>
+        <input type="number" class="form-control" id="su" name="su" placeholder="Sugar" required>
+        <label for="su">Sugar</label>
+      </div>
+
+      <div class="form-floating">
+        <i class="bi bi-droplet"></i>
+        <input type="number" class="form-control" id="rbc" name="rbc" placeholder="Red Blood Cells Count" required>
+        <label for="rbc">Red Blood Cells Count</label>
+      </div>
+
+      <div class="form-floating">
+        <i class="bi bi-bucket-fill"></i>
+        <input type="number" class="form-control" id="pc" name="pc" placeholder="Pus Cell Count" required>
+        <label for="pc">Pus Cell Count</label>
+      </div>
+
+      <div class="form-floating">
+        <i class="bi bi-bucket"></i>
+        <input type="number" class="form-control" id="pcc" name="pcc" placeholder="Pus Cell Clumps" required>
+        <label for="pcc">Pus Cell Clumps</label>
+      </div>
+
+      <div class="text-center">
+        <button type="submit" class="btn btn-custom btn-lg">Predict Risk</button>
+      </div>
+    </form>
+  </div>
+
+ <!-- Prediction Result -->
+{% if prediction_text %}
+  <div class="alert {% if high_risk %}alert-high{% else %}alert-low{% endif %} mt-4 fw-bold fs-5 text-center">
+    ⚠️ {{ prediction_text }}
+  </div>
+
+  {% if high_risk %}
+    <div class="mt-5">
+      <h3 class="text-center mb-4">⚠️ Important Information for High-Risk Patients</h3>
+      <div class="accordion" id="kidneyRiskInfo">
+        <!-- Accordion Items -->
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="descHeading">
+            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#descCollapse" aria-expanded="true">
+              📝 Brief Description
+            </button>
+          </h2>
+          <div id="descCollapse" class="accordion-collapse collapse show" data-bs-parent="#kidneyRiskInfo">
+            <div class="accordion-body">
+              Kidney disease affects the kidneys’ ability to filter blood properly. Untreated cases may lead to kidney failure.
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="symptomsHeading">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#symptomsCollapse">
+              ⚠️ Common Symptoms
+            </button>
+          </h2>
+          <div id="symptomsCollapse" class="accordion-collapse collapse" data-bs-parent="#kidneyRiskInfo">
+            <div class="accordion-body">
+              <ul>
+                <li>Fatigue and weakness</li>
+                <li>Swelling in legs, ankles, or face</li>
+                <li>Frequent urination</li>
+                <li>Shortness of breath</li>
+                <li>Confusion or difficulty concentrating</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="factorsHeading">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#factorsCollapse">
+              ⚠️ Risk Factors
+            </button>
+          </h2>
+          <div id="factorsCollapse" class="accordion-collapse collapse" data-bs-parent="#kidneyRiskInfo">
+            <div class="accordion-body">
+              <ul>
+                <li>Diabetes or high blood pressure</li>
+                <li>Heart disease or obesity</li>
+                <li>Family history of kidney disease</li>
+                <li>Smoking or alcohol use</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="preventionHeading">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#preventionCollapse">
+              ✅ Prevention Tips
+            </button>
+          </h2>
+          <div id="preventionCollapse" class="accordion-collapse collapse" data-bs-parent="#kidneyRiskInfo">
+            <div class="accordion-body">
+              <ul>
+                <li>Maintain healthy blood pressure and blood sugar</li>
+                <li>Stay hydrated and eat a balanced diet</li>
+                <li>Avoid excessive salt, alcohol, and smoking</li>
+                <li>Exercise regularly</li>
+                <li>Have regular kidney function checkups</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="text-center mt-3">
+        <a href="{% url 'search' %}" class="btn btn-danger btn-lg">Consult a Nephrologist</a>
+      </div>
+    </div>
+  {% else %}
+    <div class="card mt-4 p-4 text-center bg-light">
+      <h5>💚 Healthy Kidney Tips</h5>
+      <ul class="text-start mt-3">
+        <li>Eat fresh fruits and vegetables, limit salt and processed foods.</li>
+        <li>Exercise regularly: walking, swimming, or yoga.</li>
+        <li>Monitor blood pressure, blood sugar, and kidney function.</li>
+        <li>Avoid smoking and alcohol, maintain healthy weight.</li>
+      </ul>
+    </div>
+  {% endif %}
+
+{% endif %}
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

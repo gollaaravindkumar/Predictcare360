@@ -1,0 +1,35 @@
+{% load static %}
+
+<h2>Dear Dr. {{ values.doctor_name }},</h2>
+
+<p>
+  We hope this message finds you well. Please find below the appointment and payment details
+  for your upcoming consultation.
+</p>
+
+<h3>🧾 Appointment Details</h3>
+<ul>
+  <li><strong>Patient Name:</strong> {{ values.name }}</li>
+  <li><strong>Username:</strong> {{ values.username }}</li>
+  <li><strong>Email:</strong> {{ values.email }}</li>
+  <li><strong>Phone Number:</strong> {{ values.phone_number }}</li>
+</ul>
+
+<h3>💬 Message from Patient</h3>
+<p style="font-style: italic; background-color: #f9f9f9; padding: 10px; border-left: 4px solid #007bff;">
+  {{ values.message }}
+</p>
+
+<h3>🏥 Payment Information</h3>
+<p>
+  This receipt confirms that payment has been successfully processed for your appointment
+  with <strong>{{ values.doctor_name }}</strong>.
+</p>
+
+<p>Thank you for your dedication and continued service.</p>
+
+<br>
+
+<p>Warm regards,</p>
+<p><strong>PredictCare360 Team</strong></p>
+<p><em>Empowering Smarter Healthcare Decisions</em></p>

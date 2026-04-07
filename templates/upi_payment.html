@@ -1,0 +1,101 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>INR Payment</title>
+<style>
+body {
+    font-family: 'Segoe UI', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+}
+.payment-container {
+    background: rgba(255,255,255,0.95);
+    padding: 30px 40px;
+    border-radius: 20px;
+    box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+    max-width: 450px;
+    text-align: center;
+}
+h2 { color: #333; margin-bottom: 20px; }
+img.qr { width: 220px; margin: 20px 0; border-radius: 12px; }
+a.pay-link {
+    display: inline-block;
+    margin-top: 15px;
+    padding: 12px 28px;
+    background-color: #4CAF50;
+    color: white;
+    font-weight: bold;
+    text-decoration: none;
+    border-radius: 10px;
+    transition: 0.3s;
+}
+a.pay-link:hover { background-color: #45a049; }
+.txn-form { margin-top: 25px; }
+input[type="text"] {
+    padding: 12px;
+    width: 85%;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 15px;
+}
+button.submit-btn {
+    padding: 12px 25px;
+    font-size: 16px;
+    background-color: #2196F3;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+button.submit-btn:hover { background-color: #0b7dda; }
+.confirmation { margin-top: 20px; color: green; font-weight: bold; display: none; }
+</style>
+</head>
+<body>
+
+<div class="payment-container">
+    <h2>Pay via UPI</h2>
+
+    <!-- UPI QR Code -->
+    <img class="qr" src="{% static 'images/upi_qr.jpg' %}" alt="Scan to Pay">
+
+    <p>Scan the QR code with any UPI app or click the button below to pay instantly.</p>
+
+    <!-- UPI Link -->
+    <a class="pay-link" href="upi://pay?pa=yourname@okaxis&pn=Golla%20Aravind%20Kumar&am=500&cu=INR">
+        Pay 500 INR via UPI
+    </a>
+
+    <!-- Optional Txn ID Form -->
+    <form class="txn-form" onsubmit="return submitTxn()">
+        <input type="text" id="txn_id" placeholder="Enter UPI Transaction ID" required><br>
+        <button type="submit" class="submit-btn">Submit</button>
+    </form>
+
+    <div class="confirmation" id="confirmation">
+        ✅ Payment Confirmed! Thank you.
+    </div>
+</div>
+
+<script>
+function submitTxn() {
+    const txnId = document.getElementById('txn_id').value.trim();
+    if(txnId) {
+        // In real scenario, you will verify txnId via backend
+        document.getElementById('confirmation').style.display = 'block';
+        document.getElementById('txn_id').value = '';
+    }
+    return false; // prevent form submission
+}
+</script>
+
+</body>
+</html>
